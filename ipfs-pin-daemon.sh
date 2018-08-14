@@ -9,6 +9,8 @@ DB_FILE="$2"
 
 DOMAINS=$(cat "$DOMAIN_LIST")
 
+declare -a newpinnedhashes
+
 do_pin() {
   echo "Pin $add..."
   (ipfs pin add -r --progress "$add" && newpinnedhashes+=("$add")) || echo "Pinning of $add failed! Re-trying later..."
