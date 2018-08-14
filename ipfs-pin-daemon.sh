@@ -9,6 +9,17 @@ DB_FILE="$2"
 
 DOMAINS=$(cat "$DOMAIN_LIST")
 
+declare -a newpinnedhashes
+
+do_pin() {
+  echo "Pin $add..."
+  if ipfs pin add -r --progress "$add"; then
+    newpinnedhashes+=("$add")
+  else
+    echo "Pinning of $add failed! Re-trying later..."
+  fi
+}
+
 loop() {
   newhashes=()
   for domain in $DOMAINS; do
@@ -60,13 +71,11 @@ loop() {
 
   if [ ! -z "${delhashes[*]}" ]; then
     for add in "${newhashes[@]}"; do # we need to re-pin EVERY hash as unpin might have recursivly removed some
-    echo "Pin $add..."
-    (ipfs pin add -r --progress "$add" && newpinnedhashes+=("$add")) || echo "Pinning of $add failed! Re-trying later..."
+      do_pin
     done
   elif [ ! -z "${addhashes[*]}" ]; then
     for add in "${addhashes[@]}"; do
-      echo "Pin $add..."
-      (ipfs pin add -r --progress "$add" && newpinnedhashes+=("$add")) || echo "Pinning of $add failed! Re-trying later..."
+      do_pin
     done
   fi
 
