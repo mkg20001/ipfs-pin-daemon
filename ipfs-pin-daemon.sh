@@ -53,7 +53,7 @@ loop() {
 
   for add in "${addhashes[@]}"; do
     echo "Pin $add..."
-    ipfs pin add -r --progress "$add"
+    ipfs pin add -r --progress "$add" || (echo "Pinning of $add failed! Re-trying later..." && newhashes=("${newhashes[@]/$add}"))
   done
 
   for del in "${delhashes[@]}"; do
