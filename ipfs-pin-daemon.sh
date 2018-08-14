@@ -26,7 +26,7 @@ loop() {
   for curhash in "${curhashes[@]}"; do # make list of hashes to delete
     hasMatch=false
     for newhash in "${newhashes[@]}"; do
-      if [ "$newhash" -eq "$curhash" ]; then
+      if [ "$newhash" == "$curhash" ]; then
         hasMatch=true
       fi
     done
@@ -35,10 +35,10 @@ loop() {
     fi
   done
 
-  for newhash in "${newhashes[@]}"; do
+  for newhash in "${newhashes[@]}"; do # make a list of hashes to add
     hasMatch=false
     for curhash in "${curhashes[@]}"; do
-      if [ "$curhash" -eq "$newhash" ]; then
+      if [ "$curhash" == "$newhash" ]; then
         hasMatch=true
       fi
     done
