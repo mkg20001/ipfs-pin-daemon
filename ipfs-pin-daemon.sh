@@ -2,6 +2,17 @@
 
 set -e
 
+function contains() {
+  match="$1"
+  shift
+  for e in "$@"; do
+    if [ "$e" == "$match" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 DOMAIN_LIST="$1"
 [ -z "$DOMAIN_LIST" ] && echo "Usage: $0 <domain-list> [<db-file>]"
 DB_FILE="$2"
@@ -36,24 +47,14 @@ loop() {
 
   for curhash in "${curhashes[@]}"; do # make list of hashes to delete
     hasMatch=false
-    for newhash in "${newhashes[@]}"; do
-      if [ "$newhash" == "$curhash" ]; then
-        hasMatch=true
-      fi
-    done
-    if ! $hasMatch; then
+    if ! contains "$curhash" "${newhashes[@]}"; then
       delhashes+=("$curhash")
     fi
   done
 
   for newhash in "${newhashes[@]}"; do # make a list of hashes to add
     hasMatch=false
-    for curhash in "${curhashes[@]}"; do
-      if [ "$curhash" == "$newhash" ]; then
-        hasMatch=true
-      fi
-    done
-    if ! $hasMatch; then
+    if ! contains "$newhash" "${curhashes[@]}"; then
       addhashes+=("$newhash")
     fi
   done
@@ -76,6 +77,15 @@ loop() {
   elif [ ! -z "${addhashes[*]}" ]; then
     for add in "${addhashes[@]}"; do
       do_pin
+    done
+    for hash in "${newhashes[@]}"; do
+      if ! contains "$hash" "${addhashes[@]}"; then
+        newpinnedhashes+=("$hash")
+      fi
+    done
+  else
+    for hash in "${newhashes[@]}"; do
+      newpinnedhashes+=("$hash")
     done
   fi
 
