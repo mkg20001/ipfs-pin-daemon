@@ -46,14 +46,12 @@ loop() {
   addhashes=()
 
   for curhash in "${curhashes[@]}"; do # make list of hashes to delete
-    hasMatch=false
     if ! contains "$curhash" "${newhashes[@]}"; then
       delhashes+=("$curhash")
     fi
   done
 
   for newhash in "${newhashes[@]}"; do # make a list of hashes to add
-    hasMatch=false
     if ! contains "$newhash" "${curhashes[@]}"; then
       addhashes+=("$newhash")
     fi
